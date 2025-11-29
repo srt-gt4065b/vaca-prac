@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>토익 영단어 한매타자 게임</title>
+    <title>🚀 토익 영단어 갤로그 슈팅</title>
     <style>
         * {
             margin: 0;
@@ -13,239 +13,98 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
             min-height: 100vh;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
         }
 
         .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 800px;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0c0c0c 100%);
+        }
+
+        .ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            color: #333;
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 14px;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
         }
 
         .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 20px;
+            z-index: 101;
         }
 
         .stat-box {
-            background: #f5f5f5;
-            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 20px;
             border-radius: 10px;
-            text-align: center;
-            border-left: 4px solid #667eea;
+            border: 2px solid #667eea;
+            backdrop-filter: blur(10px);
         }
 
         .stat-label {
             font-size: 12px;
-            color: #999;
-            text-transform: uppercase;
-            margin-bottom: 8px;
+            opacity: 0.8;
+            margin-bottom: 5px;
         }
 
         .stat-value {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
-            color: #333;
+            color: #fff;
         }
 
-        .game-area {
-            margin-bottom: 30px;
-        }
-
-        .difficulty-selector {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .difficulty-btn {
-            padding: 10px 20px;
-            border: 2px solid #ddd;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .difficulty-btn.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .difficulty-btn:hover {
-            border-color: #667eea;
-        }
-
-        .word-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
+        .current-word {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(102, 126, 234, 0.9);
+            padding: 20px 30px;
             border-radius: 15px;
+            border: 3px solid #fff;
+            backdrop-filter: blur(10px);
             text-align: center;
-            margin-bottom: 20px;
-            min-height: 150px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            min-width: 200px;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
         }
 
-        .word {
+        .word-text {
             font-size: 28px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px #fff;
         }
 
-        .pronunciation {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-bottom: 15px;
-        }
-
-        .hint-text {
-            font-size: 14px;
-            opacity: 0.8;
-            font-style: italic;
-        }
-
-        .options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .option-btn {
-            padding: 20px;
-            border: 2px solid #e0e0e0;
-            background: white;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s;
-            text-align: center;
-        }
-
-        .option-btn:hover {
-            border-color: #667eea;
-            background: #f8f9ff;
-        }
-
-        .option-btn.selected {
-            border-color: #667eea;
-            background: #667eea;
-            color: white;
-        }
-
-        .option-btn.correct {
-            border-color: #4caf50;
-            background: #4caf50;
-            color: white;
-        }
-
-        .option-btn.incorrect {
-            border-color: #f44336;
-            background: #f44336;
-            color: white;
-        }
-
-        .feedback {
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-weight: 600;
-            text-align: center;
-            display: none;
-        }
-
-        .feedback.correct {
-            background: #e8f5e9;
-            color: #2e7d32;
-            display: block;
-        }
-
-        .feedback.incorrect {
-            background: #ffebee;
-            color: #c62828;
-            display: block;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        button {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-primary:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-secondary {
-            background: #f5f5f5;
-            color: #333;
-            border: 2px solid #e0e0e0;
-        }
-
-        .btn-secondary:hover {
-            background: #e8e8e8;
+        .score-display {
+            font-size: 18px;
+            color: #ffd700;
         }
 
         .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 40px;
+            border-radius: 20px;
             text-align: center;
-            padding: 30px;
-            background: #f5f5f5;
-            border-radius: 15px;
+            border: 3px solid #667eea;
+            backdrop-filter: blur(20px);
             display: none;
         }
 
@@ -254,110 +113,90 @@
         }
 
         .game-over h2 {
-            font-size: 28px;
-            color: #333;
+            font-size: 36px;
             margin-bottom: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .final-score {
-            font-size: 48px;
+            font-size: 64px;
             font-weight: bold;
-            color: #667eea;
-            margin: 20px 0;
-        }
-
-        .result-details {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .result-item:last-child {
-            border-bottom: none;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        .timer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .time-display {
-            font-size: 18px;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .time-display.warning {
-            color: #f44336;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            color: #ffd700;
+            margin: 30px 0;
+            text-shadow: 0 0 20px #ffd700;
         }
 
         .menu-screen {
-            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(12,12,12,0.95) 0%, rgba(26,26,46,0.95) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
         }
 
         .menu-screen.hidden {
             display: none;
         }
 
-        .menu-btn {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            font-size: 18px;
+        .menu-title {
+            font-size: 48px;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
         }
 
-        @media (max-width: 600px) {
-            .header h1 {
-                font-size: 24px;
-            }
+        .menu-btn {
+            width: 300px;
+            padding: 20px;
+            margin: 15px;
+            font-size: 20px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
 
+        .btn-easy { background: linear-gradient(45deg, #4caf50, #8bc34a); color: white; }
+        .btn-normal { background: linear-gradient(45deg, #ff9800, #ffb74d); color: white; }
+        .btn-hard { background: linear-gradient(45deg, #f44336, #ff5722); color: white; }
+
+        .menu-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        canvas {
+            display: block;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0c0c0c 100%);
+        }
+
+        @media (max-width: 768px) {
+            .current-word {
+                position: absolute;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                right: auto;
+                width: 90%;
+            }
+            
             .stats {
-                grid-template-columns: 1fr;
-            }
-
-            .options {
-                grid-template-columns: 1fr;
-            }
-
-            .difficulty-selector {
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
                 flex-direction: column;
-            }
-
-            .difficulty-btn {
-                width: 100%;
+                gap: 10px;
             }
         }
     </style>
@@ -366,440 +205,542 @@
     <div class="container">
         <!-- 메뉴 화면 -->
         <div class="menu-screen" id="menuScreen">
-            <div class="header">
-                <h1>🎮 토익 영단어 한매타자</h1>
-                <p>빠르게 단어의 뜻을 맞춰보세요!</p>
-            </div>
-
-            <div style="text-align: center; margin: 40px 0;">
-                <p style="font-size: 14px; color: #666; margin-bottom: 30px;">
-                    🎯 4개의 선택지 중에서 정답을 선택하세요<br>
-                    ⏱️ 시간 제한: 각 문제당 15초<br>
-                    📊 10개의 단어를 풀고 점수를 획득하세요
-                </p>
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button class="btn-primary menu-btn" onclick="startGame('easy')">
-                    🟢 쉬움 (기초 단어)
-                </button>
-                <button class="btn-primary menu-btn" onclick="startGame('normal')">
-                    🟡 보통 (중급 단어)
-                </button>
-                <button class="btn-primary menu-btn" onclick="startGame('hard')">
-                    🔴 어려움 (고급 단어)
-                </button>
-            </div>
+            <h1 class="menu-title">🚀 토익 영단어 갤로그</h1>
+            <p style="font-size: 18px; margin-bottom: 50px; opacity: 0.8;">적 단어들을 쏘아 맞춰보세요!</p>
+            <button class="menu-btn btn-easy" onclick="startGame('easy')">🟢 쉬움 (기초 단어)</button>
+            <button class="menu-btn btn-normal" onclick="startGame('normal')">🟡 보통 (중급 단어)</button>
+            <button class="menu-btn btn-hard" onclick="startGame('hard')">🔴 어려움 (고급 단어)</button>
         </div>
 
-        <!-- 게임 화면 -->
-        <div id="gameScreen" style="display: none;">
-            <div class="header">
-                <h1>토익 영단어 한매타자</h1>
-            </div>
-
+        <!-- 게임 UI -->
+        <div class="ui-overlay">
             <div class="stats">
                 <div class="stat-box">
                     <div class="stat-label">점수</div>
                     <div class="stat-value" id="score">0</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">문제</div>
+                    <div class="stat-label">질문</div>
                     <div class="stat-value" id="questionNum">1/10</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">정답률</div>
-                    <div class="stat-value" id="accuracy">0%</div>
+                    <div class="stat-label">남은시간</div>
+                    <div class="stat-value" id="timeLeft">60</div>
                 </div>
             </div>
 
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-
-            <div class="timer">
-                <div>난이도: <strong id="difficultyDisplay">보통</strong></div>
-                <div class="time-display" id="timeDisplay">15초</div>
-            </div>
-
-            <div class="game-area">
-                <div class="word-card">
-                    <div class="word" id="wordDisplay">Loading...</div>
-                    <div class="pronunciation" id="pronunciationDisplay"></div>
-                    <div class="hint-text" id="hintDisplay"></div>
-                </div>
-
-                <div class="feedback" id="feedback"></div>
-
-                <div class="options" id="optionsContainer">
-                    <button class="option-btn" onclick="selectOption(0)">Option 1</button>
-                    <button class="option-btn" onclick="selectOption(1)">Option 2</button>
-                    <button class="option-btn" onclick="selectOption(2)">Option 3</button>
-                    <button class="option-btn" onclick="selectOption(3)">Option 4</button>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>
-                        다음 문제
-                    </button>
-                    <button class="btn-secondary" onclick="menuScreen()">
-                        메뉴로
-                    </button>
-                </div>
+            <div class="current-word" id="currentWord">
+                <div class="word-text" id="targetWord">Loading...</div>
+                <div class="score-display" id="dynamicScore">100점</div>
             </div>
         </div>
 
         <!-- 게임 오버 화면 -->
-        <div id="gameOverScreen" class="game-over">
-            <h2>게임 종료!</h2>
-            <div class="final-score" id="finalScore">0점</div>
-            <div class="result-details">
-                <div class="result-item">
-                    <span>정답 개수</span>
-                    <strong id="correctCount">0개</strong>
-                </div>
-                <div class="result-item">
-                    <span>오답 개수</span>
-                    <strong id="incorrectCount">0개</strong>
-                </div>
-                <div class="result-item">
-                    <span>정답률</span>
-                    <strong id="finalAccuracy">0%</strong>
-                </div>
-                <div class="result-item">
-                    <span>평가</span>
-                    <strong id="evaluation">평가 대기 중</strong>
-                </div>
+        <div class="game-over" id="gameOverScreen">
+            <h2>🎮 미션 완료!</h2>
+            <div class="final-score" id="finalScore">0</div>
+            <div style="font-size: 20px; margin: 20px 0; opacity: 0.8;">
+                정답: <span id="correctCount" style="color: #4caf50;">0</span>개 / 
+                총점: <span id="totalScore" style="color: #ffd700;">0</span>점
             </div>
-            <div class="button-group">
-                <button class="btn-primary" onclick="menuScreen()">메뉴로 돌아가기</button>
-                <button class="btn-secondary" onclick="restartGame()">다시 하기</button>
+            <div style="margin: 30px 0;">
+                <button class="menu-btn btn-normal" onclick="menuScreen()" style="width: 250px;">🏠 메뉴로</button>
+                <button class="menu-btn btn-easy" onclick="restartGame()" style="width: 250px;">🔄 다시하기</button>
             </div>
         </div>
+
+        <!-- 게임 캔버스 -->
+        <canvas id="gameCanvas"></canvas>
     </div>
 
     <script>
-        // 토익 단어 데이터베이스
+        // 토익 단어 데이터 (이전과 동일)
         const wordDatabase = {
             easy: [
-                { word: 'abundant', pronunciation: 'əˈbʌndənt', meaning: '풍부한', options: ['풍부한', '드문', '비싼', '작은'] },
-                { word: 'accomplish', pronunciation: 'əˈkɑːmplɪʃ', meaning: '성취하다', options: ['성취하다', '실패하다', '계획하다', '거절하다'] },
-                { word: 'acquire', pronunciation: 'əˈkwaɪər', meaning: '획득하다', options: ['획득하다', '잃어버리다', '팔다', '숨기다'] },
-                { word: 'adequate', pronunciation: 'ˈædɪkwət', meaning: '적절한', options: ['적절한', '부족한', '과도한', '이상한'] },
-                { word: 'adverse', pronunciation: 'ˈædvɜːrs', meaning: '부정적인', options: ['부정적인', '긍정적인', '중립적인', '명확한'] },
-                { word: 'advocate', pronunciation: 'ˈædvəkət', meaning: '옹호자', options: ['옹호자', '반대자', '관찰자', '평가자'] },
-                { word: 'affect', pronunciation: 'əˈfekt', meaning: '영향을 주다', options: ['영향을 주다', '무시하다', '거부하다', '변경하다'] },
-                { word: 'allocate', pronunciation: 'ˈæləkeɪt', meaning: '배분하다', options: ['배분하다', '수집하다', '소비하다', '저축하다'] },
-                { word: 'anticipate', pronunciation: 'ænˈtɪsɪpeɪt', meaning: '예상하다', options: ['예상하다', '지연하다', '회상하다', '독점하다'] },
-                { word: 'apparent', pronunciation: 'əˈpærənt', meaning: '분명한', options: ['분명한', '숨겨진', '가능한', '불가능한'] }
+                { word: 'abundant', meaning: '풍부한' }, { word: 'accomplish', meaning: '성취하다' },
+                { word: 'acquire', meaning: '획득하다' }, { word: 'adequate', meaning: '적절한' },
+                { word: 'adverse', meaning: '부정적인' }, { word: 'advocate', meaning: '옹호자' },
+                { word: 'affect', meaning: '영향을 주다' }, { word: 'allocate', meaning: '배분하다' },
+                { word: 'anticipate', meaning: '예상하다' }, { word: 'apparent', meaning: '분명한' }
             ],
             normal: [
-                { word: 'arbitrary', pronunciation: 'ˈɑːrbɪtreri', meaning: '자의적인', options: ['자의적인', '논리적인', '계획된', '확실한'] },
-                { word: 'augment', pronunciation: 'ɔːɡˈment', meaning: '증가시키다', options: ['증가시키다', '감소하다', '고정하다', '복구하다'] },
-                { word: 'autonomy', pronunciation: 'ɔːˈtɑːnəmi', meaning: '자율성', options: ['자율성', '의존성', '관계', '영향력'] },
-                { word: 'benchmark', pronunciation: 'ˈbentʃmɑːrk', meaning: '기준', options: ['기준', '예측', '대상', '상황'] },
-                { word: 'bilateral', pronunciation: 'baɪˈlætərəl', meaning: '양자적인', options: ['양자적인', '일방적인', '다각적인', '종속적인'] },
-                { word: 'cohesive', pronunciation: 'koʊˈhiːsɪv', meaning: '응집력 있는', options: ['응집력 있는', '분산된', '약한', '독립적인'] },
-                { word: 'commodity', pronunciation: 'kəˈmɑːdəti', meaning: '상품', options: ['상품', '서비스', '가치', '기술'] },
-                { word: 'compliance', pronunciation: 'kəmˈplaɪəns', meaning: '준수', options: ['준수', '위반', '거부', '무시'] },
-                { word: 'concurrent', pronunciation: 'kənˈkɜːrənt', meaning: '동시의', options: ['동시의', '순차적인', '독립적인', '반대의'] },
-                { word: 'contingency', pronunciation: 'kənˈtɪndʒənsi', meaning: '우발 상황', options: ['우발 상황', '계획', '결과', '이유'] }
+                { word: 'arbitrary', meaning: '자의적인' }, { word: 'augment', meaning: '증가시키다' },
+                { word: 'autonomy', meaning: '자율성' }, { word: 'benchmark', meaning: '기준' },
+                { word: 'bilateral', meaning: '양자적인' }, { word: 'cohesive', meaning: '응집력 있는' },
+                { word: 'commodity', meaning: '상품' }, { word: 'compliance', meaning: '준수' },
+                { word: 'concurrent', meaning: '동시의' }, { word: 'contingency', meaning: '우발 상황' }
             ],
             hard: [
-                { word: 'aggregate', pronunciation: 'ˈæɡrɪɡət', meaning: '합계', options: ['합계', '개별', '감소', '분류'] },
-                { word: 'alleviate', pronunciation: 'əˈliːvieɪt', meaning: '완화하다', options: ['완화하다', '악화하다', '무시하다', '강조하다'] },
-                { word: 'ameliorate', pronunciation: 'əˈmiːliəreɪt', meaning: '개선하다', options: ['개선하다', '악화하다', '유지하다', '지연하다'] },
-                { word: 'amorphous', pronunciation: 'əˈmɔːrfəs', meaning: '형태 없는', options: ['형태 없는', '명확한', '조직된', '고정된'] },
-                { word: 'authenticate', pronunciation: 'ɔːˈθentɪkeɪt', meaning: '인증하다', options: ['인증하다', '거부하다', '의심하다', '부정하다'] },
-                { word: 'augury', pronunciation: 'ˈɔːɡjuri', meaning: '징조', options: ['징조', '사건', '계획', '결과'] },
-                { word: 'burgeoning', pronunciation: 'ˈbɜːrdʒənɪŋ', meaning: '번성하는', options: ['번성하는', '쇠퇴하는', '정체된', '안정된'] },
-                { word: 'circumvent', pronunciation: 'ˌsɜːrkəmˈvent', meaning: '회피하다', options: ['회피하다', '직면하다', '제안하다', '수용하다'] },
-                { word: 'cogent', pronunciation: 'ˈkoʊdʒənt', meaning: '설득력 있는', options: ['설득력 있는', '약한', '모호한', '무의미한'] },
-                { word: 'corroborate', pronunciation: 'kəˈrɑːbəreɪt', meaning: '확증하다', options: ['확증하다', '부인하다', '의심하다', '거부하다'] }
+                { word: 'aggregate', meaning: '합계' }, { word: 'alleviate', meaning: '완화하다' },
+                { word: 'ameliorate', meaning: '개선하다' }, { word: 'amorphous', meaning: '형태 없는' },
+                { word: 'authenticate', meaning: '인증하다' }, { word: 'augury', meaning: '징조' },
+                { word: 'burgeoning', meaning: '번성하는' }, { word: 'circumvent', meaning: '회피하다' },
+                { word: 'cogent', meaning: '설득력 있는' }, { word: 'corroborate', meaning: '확증하다' }
             ]
         };
 
         // 게임 상태
-        let gameState = {
-            currentDifficulty: 'normal',
+        const gameState = {
+            canvas: null,
+            ctx: null,
+            difficulty: 'normal',
+            words: [],
+            currentTargetWord: null,
             currentQuestionIndex: 0,
-            currentQuestion: null,
+            enemies: [],
+            bullets: [],
+            particles: [],
             score: 0,
+            totalScore: 0,
             correctAnswers: 0,
-            incorrectAnswers: 0,
-            selectedOption: null,
-            answered: false,
-            timeRemaining: 15,
-            timerInterval: null,
-            words: []
+            gameTime: 0,
+            maxScore: 100,
+            ship: {
+                x: 0,
+                y: 0,
+                width: 40,
+                height: 40,
+                speed: 8
+            },
+            keys: {},
+            gameRunning: false,
+            gamePaused: false
         };
 
         // 초기화
         function init() {
-            updateStats();
+            gameState.canvas = document.getElementById('gameCanvas');
+            gameState.ctx = gameState.canvas.getContext('2d');
+            
+            resizeCanvas();
+            setupEventListeners();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // 캔버스 크기 조정
+        function resizeCanvas() {
+            const rect = gameState.canvas.getBoundingClientRect();
+            gameState.canvas.width = rect.width;
+            gameState.canvas.height = rect.height;
+            gameState.ship.x = gameState.canvas.width / 2 - gameState.ship.width / 2;
+            gameState.ship.y = gameState.canvas.height - 100;
+        }
+
+        // 이벤트 리스너
+        function setupEventListeners() {
+            window.addEventListener('resize', resizeCanvas);
+            
+            document.addEventListener('keydown', (e) => {
+                gameState.keys[e.code] = true;
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    shoot();
+                }
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                gameState.keys[e.code] = false;
+            });
+
+            // 터치/마우스 지원
+            gameState.canvas.addEventListener('touchmove', handleInput);
+            gameState.canvas.addEventListener('mousemove', handleInput);
+            gameState.canvas.addEventListener('touchstart', (e) => e.preventDefault());
+            gameState.canvas.addEventListener('click', shoot);
+        }
+
+        // 입력 처리
+        function handleInput(e) {
+            e.preventDefault();
+            const rect = gameState.canvas.getBoundingClientRect();
+            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+            
+            gameState.ship.x = x - gameState.ship.width / 2;
+            gameState.ship.x = Math.max(0, Math.min(gameState.canvas.width - gameState.ship.width, gameState.ship.x));
         }
 
         // 게임 시작
         function startGame(difficulty) {
-            gameState.currentDifficulty = difficulty;
+            gameState.difficulty = difficulty;
+            gameState.words = shuffleArray([...wordDatabase[difficulty]]);
             gameState.currentQuestionIndex = 0;
             gameState.score = 0;
+            gameState.totalScore = 0;
             gameState.correctAnswers = 0;
-            gameState.incorrectAnswers = 0;
-            gameState.words = shuffleArray([...wordDatabase[difficulty]]);
-
-            document.getElementById('menuScreen').style.display = 'none';
-            document.getElementById('gameScreen').style.display = 'block';
+            gameState.gameTime = 60;
+            gameState.enemies = [];
+            gameState.bullets = [];
+            gameState.particles = [];
+            gameState.maxScore = 100;
+            gameState.gameRunning = true;
+            
+            document.getElementById('menuScreen').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.remove('show');
-
-            const difficultyNames = {
-                easy: '쉬움',
-                normal: '보통',
-                hard: '어려움'
-            };
-            document.getElementById('difficultyDisplay').textContent = difficultyNames[difficulty];
-
-            loadQuestion();
-        }
-
-        // 문제 로드
-        function loadQuestion() {
-            gameState.selectedOption = null;
-            gameState.answered = false;
-            gameState.timeRemaining = 15;
-
-            if (gameState.currentQuestionIndex >= 10) {
-                endGame();
-                return;
-            }
-
-            gameState.currentQuestion = gameState.words[gameState.currentQuestionIndex];
-
-            // 단어 표시
-            document.getElementById('wordDisplay').textContent = gameState.currentQuestion.word;
-            document.getElementById('pronunciationDisplay').textContent = gameState.currentQuestion.pronunciation;
-
-            // 힌트 표시 (난이도별)
-            const hint = getHint(gameState.currentQuestion.word, gameState.currentDifficulty);
-            document.getElementById('hintDisplay').textContent = `💡 팁: ${hint}`;
-
-            // 선택지 셔플
-            const shuffledOptions = shuffleArray([...gameState.currentQuestion.options]);
-
-            // 선택지 버튼 생성
-            const optionsContainer = document.getElementById('optionsContainer');
-            optionsContainer.innerHTML = '';
-            shuffledOptions.forEach((option, index) => {
-                const button = document.createElement('button');
-                button.className = 'option-btn';
-                button.textContent = option;
-                button.onclick = () => selectOption(index);
-                optionsContainer.appendChild(button);
-            });
-
-            // 선택지 데이터 저장 (정답 확인용)
-            gameState.currentQuestion.shuffledOptions = shuffledOptions;
-
-            // 통계 업데이트
-            updateStats();
-            resetFeedback();
-            disableNextButton();
-
-            // 타이머 시작
-            startTimer();
-        }
-
-        // 타이머 시작
-        function startTimer() {
-            clearInterval(gameState.timerInterval);
-            updateTimerDisplay();
-
-            gameState.timerInterval = setInterval(() => {
-                gameState.timeRemaining--;
-                updateTimerDisplay();
-
-                if (gameState.timeRemaining <= 0) {
-                    clearInterval(gameState.timerInterval);
-                    if (!gameState.answered) {
-                        showFeedback(false, '시간 초과!');
-                        gameState.incorrectAnswers++;
-                        gameState.answered = true;
-                        enableNextButton();
-                    }
-                }
-            }, 1000);
-        }
-
-        // 타이머 표시 업데이트
-        function updateTimerDisplay() {
-            const display = document.getElementById('timeDisplay');
-            display.textContent = gameState.timeRemaining + '초';
-
-            if (gameState.timeRemaining <= 5) {
-                display.classList.add('warning');
-            } else {
-                display.classList.remove('warning');
-            }
-        }
-
-        // 선택지 선택
-        function selectOption(index) {
-            if (gameState.answered) return;
-
-            gameState.selectedOption = index;
-            gameState.answered = true;
-
-            // UI 업데이트
-            const buttons = document.querySelectorAll('.option-btn');
-            buttons.forEach((btn, i) => {
-                btn.classList.remove('selected');
-                if (i === index) {
-                    btn.classList.add('selected');
-                }
-            });
-
-            clearInterval(gameState.timerInterval);
-
-            // 정답 확인
-            const selectedAnswer = gameState.currentQuestion.shuffledOptions[index];
-            const isCorrect = selectedAnswer === gameState.currentQuestion.meaning;
-
-            if (isCorrect) {
-                gameState.correctAnswers++;
-                gameState.score += calculatePoints();
-                showFeedback(true, '정답입니다! 🎉');
-                buttons[index].classList.remove('selected');
-                buttons[index].classList.add('correct');
-            } else {
-                gameState.incorrectAnswers++;
-                showFeedback(false, `오답입니다. 정답: ${gameState.currentQuestion.meaning}`);
-                buttons[index].classList.remove('selected');
-                buttons[index].classList.add('incorrect');
-
-                // 정답 버튼 표시
-                buttons.forEach((btn, i) => {
-                    if (gameState.currentQuestion.shuffledOptions[i] === gameState.currentQuestion.meaning) {
-                        btn.classList.add('correct');
-                    }
-                });
-            }
-
-            updateStats();
-            enableNextButton();
-        }
-
-        // 포인트 계산
-        function calculatePoints() {
-            const difficulty = gameState.currentDifficulty;
-            const basePoints = { easy: 10, normal: 20, hard: 30 };
-            const timeBonus = Math.max(0, Math.floor(gameState.timeRemaining * 0.5));
-            return basePoints[difficulty] + timeBonus;
-        }
-
-        // 피드백 표시
-        function showFeedback(isCorrect, message) {
-            const feedback = document.getElementById('feedback');
-            feedback.textContent = message;
-            feedback.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
-        }
-
-        // 피드백 초기화
-        function resetFeedback() {
-            const feedback = document.getElementById('feedback');
-            feedback.className = 'feedback';
-            feedback.textContent = '';
+            
+            nextQuestion();
+            updateUI();
         }
 
         // 다음 문제
         function nextQuestion() {
+            if (gameState.currentQuestionIndex >= 10) {
+                endGame();
+                return;
+            }
+            
+            gameState.currentTargetWord = gameState.words[gameState.currentQuestionIndex];
+            gameState.enemies = [];
+            gameState.maxScore = 100;
+            
+            // 적 생성
+            spawnEnemies();
+            
+            updateUI();
             gameState.currentQuestionIndex++;
-            loadQuestion();
+        }
+
+        // 적 생성
+        function spawnEnemies() {
+            const wrongOptions = [
+                gameState.currentTargetWord.meaning + '?!',
+                '틀린 답',
+                '아닌 뜻',
+                '다른 뜻'
+            ];
+            
+            // 정답 적
+            gameState.enemies.push(createEnemy(gameState.currentTargetWord.meaning, true));
+            
+            // 오답 적들 (3개)
+            shuffleArray(wrongOptions).slice(0, 3).forEach(option => {
+                gameState.enemies.push(createEnemy(option, false));
+            });
+            
+            // 추가 잡몹들
+            for (let i = 0; i < 5; i++) {
+                gameState.enemies.push(createEnemy('잡몹', false));
+            }
+        }
+
+        // 적 생성
+        function createEnemy(text, isCorrect) {
+            return {
+                x: Math.random() * (gameState.canvas.width - 80),
+                y: -60,
+                width: 80,
+                height: 60,
+                speed: 1.5 + Math.random() * 2,
+                text: text,
+                isCorrect: isCorrect,
+                color: isCorrect ? '#4caf50' : '#f44336',
+                glow: isCorrect ? '#00ff88' : '#ff4444',
+                destroyed: false,
+                size: 1 + Math.random() * 0.5
+            };
+        }
+
+        // 발사
+        function shoot() {
+            if (!gameState.gameRunning) return;
+            
+            gameState.bullets.push({
+                x: gameState.ship.x + gameState.ship.width / 2,
+                y: gameState.ship.y,
+                width: 4,
+                height: 12,
+                speed: 10,
+                color: '#00ffff'
+            });
+            
+            // 사운드 효과 (웹 오디오 API)
+            playShootSound();
+        }
+
+        // 게임 루프
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // 업데이트
+        function update() {
+            if (!gameState.gameRunning || gameState.gamePaused) return;
+            
+            // 배 위치 업데이트
+            if (gameState.keys['ArrowLeft']) {
+                gameState.ship.x -= gameState.ship.speed;
+            }
+            if (gameState.keys['ArrowRight']) {
+                gameState.ship.x += gameState.ship.speed;
+            }
+            
+            gameState.ship.x = Math.max(0, Math.min(gameState.canvas.width - gameState.ship.width, gameState.ship.x));
+            
+            // 총알 업데이트
+            gameState.bullets = gameState.bullets.filter(bullet => {
+                bullet.y -= bullet.speed;
+                return bullet.y > -bullet.height;
+            });
+            
+            // 적 업데이트
+            let correctEnemyHit = false;
+            
+            gameState.enemies.forEach(enemy => {
+                if (enemy.destroyed) return;
+                
+                enemy.y += enemy.speed;
+                enemy.x += (Math.sin(enemy.y * 0.01) * 2);
+                
+                // 화면 밖으로 나가면 점수 감소
+                if (enemy.y > gameState.canvas.height) {
+                    gameState.maxScore = Math.max(10, gameState.maxScore - 5);
+                }
+                
+                // 충돌 체크
+                gameState.bullets.forEach((bullet, bulletIndex) => {
+                    if (checkCollision(bullet, enemy)) {
+                        gameState.bullets.splice(bulletIndex, 1);
+                        enemy.destroyed = true;
+                        
+                        createExplosion(enemy.x + enemy.width/2, enemy.y + enemy.height/2);
+                        
+                        if (enemy.isCorrect) {
+                            correctEnemyHit = true;
+                            gameState.score += gameState.maxScore;
+                            gameState.totalScore += gameState.maxScore;
+                            gameState.correctAnswers++;
+                            playHitSound(true);
+                            
+                            setTimeout(() => {
+                                nextQuestion();
+                            }, 1000);
+                        } else {
+                            gameState.maxScore = Math.max(10, gameState.maxScore - 10);
+                            playHitSound(false);
+                        }
+                    }
+                });
+            });
+            
+            // 파티클 업데이트
+            gameState.particles = gameState.particles.filter(particle => {
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.life--;
+                particle.vy += 0.1; // 중력
+                return particle.life > 0;
+            });
+            
+            gameState.gameTime -= 1/60;
+            if (gameState.gameTime <= 0) {
+                endGame();
+            }
+            
+            updateUI();
+        }
+
+        // 충돌 체크
+        function checkCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+
+        // 폭발 이펙트
+        function createExplosion(x, y) {
+            for (let i = 0; i < 15; i++) {
+                gameState.particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    life: 30,
+                    color: '#00ffff'
+                });
+            }
+        }
+
+        // 렌더링
+        function render() {
+            // 캔버스 지우기
+            gameState.ctx.fillStyle = 'rgba(12, 12, 12, 0.1)';
+            gameState.ctx.fillRect(0, 0, gameState.canvas.width, gameState.canvas.height);
+            
+            // 배 그리기
+            drawShip();
+            
+            // 총알 그리기
+            gameState.bullets.forEach(bullet => {
+                gameState.ctx.save();
+                gameState.ctx.shadowColor = bullet.color;
+                gameState.ctx.shadowBlur = 15;
+                gameState.ctx.fillStyle = bullet.color;
+                gameState.ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                gameState.ctx.restore();
+            });
+            
+            // 적 그리기
+            gameState.enemies.forEach(enemy => {
+                if (enemy.destroyed) return;
+                
+                gameState.ctx.save();
+                gameState.ctx.translate(enemy.x + enemy.width/2, enemy.y + enemy.height/2);
+                gameState.ctx.scale(enemy.size, enemy.size);
+                
+                // 글로우 효과
+                gameState.ctx.shadowColor = enemy.glow;
+                gameState.ctx.shadowBlur = 20;
+                
+                // 배경
+                gameState.ctx.fillStyle = enemy.color;
+                gameState.ctx.fillRect(-enemy.width/2, -enemy.height/2, enemy.width, enemy.height);
+                
+                // 테두리
+                gameState.ctx.strokeStyle = '#fff';
+                gameState.ctx.lineWidth = 3;
+                gameState.ctx.strokeRect(-enemy.width/2, -enemy.height/2, enemy.width, enemy.height);
+                
+                // 텍스트
+                gameState.ctx.shadowBlur = 10;
+                gameState.ctx.fillStyle = '#fff';
+                gameState.ctx.font = 'bold 16px Arial';
+                gameState.ctx.textAlign = 'center';
+                gameState.ctx.textBaseline = 'middle';
+                gameState.ctx.fillText(enemy.text, 0, 0);
+                
+                gameState.ctx.restore();
+            });
+            
+            // 파티클 그리기
+            gameState.particles.forEach(particle => {
+                gameState.ctx.save();
+                gameState.ctx.globalAlpha = particle.life / 30;
+                gameState.ctx.shadowColor = particle.color;
+                gameState.ctx.shadowBlur = 10;
+                gameState.ctx.fillStyle = particle.color;
+                gameState.ctx.fillRect(particle.x, particle.y, 4, 4);
+                gameState.ctx.restore();
+            });
+            
+            // 스캔라인 효과
+            gameState.ctx.fillStyle = 'rgba(0, 255, 255, 0.03)';
+            gameState.ctx.fillRect(0, 0, gameState.canvas.width, gameState.canvas.height);
+        }
+
+        // 우주선 그리기
+        function drawShip() {
+            gameState.ctx.save();
+            gameState.ctx.translate(gameState.ship.x + gameState.ship.width/2, gameState.ship.y + gameState.ship.height/2);
+            
+            // 엔진 불꽃
+            gameState.ctx.shadowColor = '#ff6600';
+            gameState.ctx.shadowBlur = 20;
+            gameState.ctx.fillStyle = '#ff8800';
+            gameState.ctx.beginPath();
+            gameState.ctx.moveTo(0, 20);
+            gameState.ctx.lineTo(-8, 35);
+            gameState.ctx.lineTo(8, 35);
+            gameState.ctx.fill();
+            
+            // 우주선 본체
+            gameState.ctx.shadowColor = '#667eea';
+            gameState.ctx.shadowBlur = 25;
+            gameState.ctx.fillStyle = '#667eea';
+            gameState.ctx.beginPath();
+            gameState.ctx.moveTo(0, -25);
+            gameState.ctx.lineTo(-20, 15);
+            gameState.ctx.lineTo(-10, 20);
+            gameState.ctx.lineTo(10, 20);
+            gameState.ctx.lineTo(20, 15);
+            gameState.ctx.closePath();
+            gameState.ctx.fill();
+            
+            // 코일링
+            gameState.ctx.shadowBlur = 15;
+            gameState.ctx.fillStyle = '#fff';
+            gameState.ctx.beginPath();
+            gameState.ctx.arc(0, -15, 4, 0, Math.PI * 2);
+            gameState.ctx.fill();
+            
+            gameState.ctx.restore();
+        }
+
+        // 사운드 효과 (간단한 Web Audio)
+        function playShootSound() {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'square';
+            
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function playHitSound(isCorrect) {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.frequency.value = isCorrect ? 523 : 392;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.2);
+        }
+
+        // UI 업데이트
+        function updateUI() {
+            document.getElementById('score').textContent = gameState.totalScore;
+            document.getElementById('questionNum').textContent = `${gameState.currentQuestionIndex + 1}/10`;
+            document.getElementById('timeLeft').textContent = Math.ceil(gameState.gameTime);
+            document.getElementById('targetWord').textContent = gameState.currentTargetWord?.word || 'Loading...';
+            document.getElementById('dynamicScore').textContent = `${gameState.maxScore}점`;
         }
 
         // 게임 종료
         function endGame() {
-            clearInterval(gameState.timerInterval);
-            document.getElementById('gameScreen').style.display = 'none';
+            gameState.gameRunning = false;
+            document.getElementById('finalScore').textContent = gameState.totalScore;
+            document.getElementById('correctCount').textContent = gameState.correctAnswers;
+            document.getElementById('totalScore').textContent = gameState.totalScore;
             document.getElementById('gameOverScreen').classList.add('show');
-
-            const accuracy = Math.round((gameState.correctAnswers / 10) * 100);
-            const evaluation = getEvaluation(accuracy);
-
-            document.getElementById('finalScore').textContent = gameState.score + '점';
-            document.getElementById('correctCount').textContent = gameState.correctAnswers + '개';
-            document.getElementById('incorrectCount').textContent = gameState.incorrectAnswers + '개';
-            document.getElementById('finalAccuracy').textContent = accuracy + '%';
-            document.getElementById('evaluation').textContent = evaluation;
-        }
-
-        // 평가 결정
-        function getEvaluation(accuracy) {
-            if (accuracy === 100) return '완벽합니다! 🏆';
-            if (accuracy >= 80) return '매우 좋습니다! 👏';
-            if (accuracy >= 60) return '잘했습니다! 👍';
-            if (accuracy >= 40) return '괜찮습니다. 💪';
-            return '더 노력해보세요! 📚';
-        }
-
-        // 통계 업데이트
-        function updateStats() {
-            document.getElementById('score').textContent = gameState.score;
-            document.getElementById('questionNum').textContent = (gameState.currentQuestionIndex + 1) + '/10';
-
-            const accuracy = gameState.currentQuestionIndex > 0
-                ? Math.round((gameState.correctAnswers / gameState.currentQuestionIndex) * 100)
-                : 0;
-            document.getElementById('accuracy').textContent = accuracy + '%';
-
-            // 프로그레스 바
-            const progress = (gameState.currentQuestionIndex / 10) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
-        }
-
-        // 버튼 활성화/비활성화
-        function enableNextButton() {
-            document.getElementById('nextBtn').disabled = false;
-        }
-
-        function disableNextButton() {
-            document.getElementById('nextBtn').disabled = true;
         }
 
         // 메뉴로 돌아가기
         function menuScreen() {
-            clearInterval(gameState.timerInterval);
-            document.getElementById('menuScreen').style.display = 'block';
-            document.getElementById('gameScreen').style.display = 'none';
+            gameState.gameRunning = false;
+            document.getElementById('menuScreen').classList.remove('hidden');
             document.getElementById('gameOverScreen').classList.remove('show');
         }
 
-        // 다시 하기
+        // 다시하기
         function restartGame() {
-            startGame(gameState.currentDifficulty);
+            startGame(gameState.difficulty);
         }
 
         // 배열 섞기
         function shuffleArray(array) {
-            const shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled;
-        }
-
-        // 난이도별 힌트
-        function getHint(word, difficulty) {
-            const hints = {
-                easy: '기초 단어입니다. 자주 사용됩니다.',
-                normal: '중급 단어입니다. 토익에 자주 나옵니다.',
-                hard: '고급 단어입니다. 비즈니스 상황에서 자주 사용됩니다.'
-            };
-            return hints[difficulty];
+            return array.sort(() => Math.random() - 0.5);
         }
 
         // 초기화
-        init();
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
