@@ -2,222 +2,401 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 토익 영단어 갤로그 슈팅</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🚀 토익 영단어 갤러그 슈팅</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            touch-action: none;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            background: #0a0a15;
             color: white;
-            min-height: 100vh;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
-        .container {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-            background: radial-gradient(circle at center, #1a1a2e 0%, #0c0c0c 100%);
-        }
-
-        .ui-overlay {
-            position: absolute;
+        /* ===== 게임 컨테이너 ===== */
+        #gameContainer {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== 상단 UI 영역 ===== */
+        #topUI {
+            flex-shrink: 0;
+            background: linear-gradient(180deg, rgba(10,10,21,0.98) 0%, rgba(10,10,21,0.9) 100%);
+            padding: 10px 15px;
+            border-bottom: 2px solid #667eea;
             z-index: 100;
         }
 
-        .stats {
-            position: absolute;
-            top: 20px;
-            left: 20px;
+        .stats-row {
             display: flex;
-            gap: 20px;
-            z-index: 101;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
         .stat-box {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px 20px;
+            flex: 1;
+            background: rgba(102, 126, 234, 0.2);
+            padding: 8px 12px;
             border-radius: 10px;
-            border: 2px solid #667eea;
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.5);
+            text-align: center;
         }
 
         .stat-label {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-bottom: 5px;
+            font-size: 11px;
+            opacity: 0.7;
+            margin-bottom: 2px;
         }
 
         .stat-value {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
             color: #fff;
         }
 
-        .current-word {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(102, 126, 234, 0.9);
-            padding: 20px 30px;
-            border-radius: 15px;
-            border: 3px solid #fff;
-            backdrop-filter: blur(10px);
+        .stat-value.score { color: #ffd700; }
+        .stat-value.time { color: #00ff88; }
+
+        /* 현재 단어 표시 */
+        .word-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 12px 20px;
+            border-radius: 12px;
             text-align: center;
-            min-width: 200px;
-            box-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
         }
 
-        .word-text {
-            font-size: 28px;
+        .word-english {
+            font-size: 24px;
             font-weight: bold;
-            margin-bottom: 8px;
-            text-shadow: 0 0 10px #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            margin-bottom: 4px;
         }
 
-        .score-display {
-            font-size: 18px;
+        .word-hint {
+            font-size: 14px;
             color: #ffd700;
         }
 
-        .game-over {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.95);
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            border: 3px solid #667eea;
-            backdrop-filter: blur(20px);
-            display: none;
+        /* ===== 게임 캔버스 영역 ===== */
+        #canvasWrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a15 100%);
         }
 
-        .game-over.show {
+        #gameCanvas {
             display: block;
+            width: 100%;
+            height: 100%;
         }
 
-        .game-over h2 {
-            font-size: 36px;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* ===== 하단 컨트롤 (모바일) ===== */
+        #mobileControls {
+            flex-shrink: 0;
+            background: linear-gradient(0deg, rgba(10,10,21,0.98) 0%, rgba(10,10,21,0.9) 100%);
+            padding: 15px;
+            border-top: 2px solid #667eea;
+            display: none;
+            z-index: 100;
         }
 
-        .final-score {
-            font-size: 64px;
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .move-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .ctrl-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid rgba(102, 126, 234, 0.8);
+            background: rgba(102, 126, 234, 0.3);
+            color: white;
+            font-size: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.1s;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .ctrl-btn:active {
+            background: rgba(102, 126, 234, 0.7);
+            transform: scale(0.95);
+        }
+
+        .fire-btn {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            border: 3px solid #fff;
+            font-size: 16px;
             font-weight: bold;
-            color: #ffd700;
-            margin: 30px 0;
-            text-shadow: 0 0 20px #ffd700;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
         }
 
-        .menu-screen {
-            position: absolute;
+        .fire-btn:active {
+            background: linear-gradient(135deg, #ff8787 0%, #ff6b35 100%);
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.8);
+        }
+
+        /* ===== 메뉴 화면 ===== */
+        #menuScreen {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(12,12,12,0.95) 0%, rgba(26,26,46,0.95) 100%);
+            background: linear-gradient(135deg, #0a0a15 0%, #1a1a2e 50%, #0a0a15 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 200;
+            z-index: 1000;
+            padding: 20px;
         }
 
-        .menu-screen.hidden {
+        #menuScreen.hidden {
             display: none;
         }
 
         .menu-title {
-            font-size: 48px;
-            margin-bottom: 40px;
+            font-size: clamp(28px, 8vw, 48px);
+            margin-bottom: 10px;
             background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+            background-clip: text;
+            text-align: center;
+        }
+
+        .menu-subtitle {
+            font-size: clamp(14px, 4vw, 18px);
+            opacity: 0.7;
+            margin-bottom: 40px;
+            text-align: center;
         }
 
         .menu-btn {
-            width: 300px;
-            padding: 20px;
-            margin: 15px;
-            font-size: 20px;
+            width: 100%;
+            max-width: 300px;
+            padding: 18px 30px;
+            margin: 10px 0;
+            font-size: 18px;
+            font-weight: bold;
             border: none;
             border-radius: 15px;
             cursor: pointer;
             transition: all 0.3s;
-            backdrop-filter: blur(10px);
+            color: white;
         }
 
-        .btn-easy { background: linear-gradient(45deg, #4caf50, #8bc34a); color: white; }
-        .btn-normal { background: linear-gradient(45deg, #ff9800, #ffb74d); color: white; }
-        .btn-hard { background: linear-gradient(45deg, #f44336, #ff5722); color: white; }
+        .btn-easy { background: linear-gradient(135deg, #4caf50, #8bc34a); }
+        .btn-normal { background: linear-gradient(135deg, #ff9800, #ffb74d); }
+        .btn-hard { background: linear-gradient(135deg, #f44336, #ff5722); }
 
-        .menu-btn:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        .menu-btn:hover, .menu-btn:active {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
 
-        canvas {
-            display: block;
-            background: radial-gradient(circle at center, #1a1a2e 0%, #0c0c0c 100%);
+        /* ===== 게임오버 화면 ===== */
+        #gameOverScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
         }
 
+        #gameOverScreen.show {
+            display: flex;
+        }
+
+        .gameover-box {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px solid #667eea;
+            text-align: center;
+            max-width: 350px;
+            width: 100%;
+        }
+
+        .gameover-title {
+            font-size: 28px;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .final-score {
+            font-size: 56px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            margin: 20px 0;
+        }
+
+        .result-stats {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: 25px;
+        }
+
+        .result-stats span {
+            font-weight: bold;
+        }
+
+        .result-stats .correct { color: #4caf50; }
+        .result-stats .total { color: #ffd700; }
+
+        .gameover-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .gameover-btn {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .gameover-btn:hover, .gameover-btn:active {
+            transform: scale(1.05);
+        }
+
+        /* ===== 반응형 ===== */
         @media (max-width: 768px) {
-            .current-word {
-                position: absolute;
-                top: 80px;
-                left: 50%;
-                transform: translateX(-50%);
-                right: auto;
-                width: 90%;
+            #mobileControls {
+                display: block;
             }
-            
-            .stats {
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                flex-direction: column;
-                gap: 10px;
+
+            .stat-box {
+                padding: 6px 8px;
             }
+
+            .stat-value {
+                font-size: 18px;
+            }
+
+            .word-english {
+                font-size: 20px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            #topUI {
+                padding: 15px 30px;
+            }
+
+            .stats-row {
+                max-width: 600px;
+                margin: 0 auto 15px auto;
+            }
+
+            .word-display {
+                max-width: 400px;
+                margin: 0 auto;
+            }
+        }
+
+        /* ===== 별 배경 애니메이션 ===== */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- 메뉴 화면 -->
-        <div class="menu-screen" id="menuScreen">
-            <h1 class="menu-title">🚀 토익 영단어 갤로그</h1>
-            <p style="font-size: 18px; margin-bottom: 50px; opacity: 0.8;">적 단어들을 쏘아 맞춰보세요!</p>
-            <button class="menu-btn btn-easy" onclick="startGame('easy')">🟢 쉬움 (기초 단어)</button>
-            <button class="menu-btn btn-normal" onclick="startGame('normal')">🟡 보통 (중급 단어)</button>
-            <button class="menu-btn btn-hard" onclick="startGame('hard')">🔴 어려움 (고급 단어)</button>
-        </div>
+    <!-- 메뉴 화면 -->
+    <div id="menuScreen">
+        <h1 class="menu-title">🚀 토익 영단어 갤러그</h1>
+        <p class="menu-subtitle">올바른 뜻을 가진 적을 맞춰 점수를 획득하세요!</p>
+        <button class="menu-btn btn-easy" onclick="startGame('easy')">🟢 쉬움 (기초 단어)</button>
+        <button class="menu-btn btn-normal" onclick="startGame('normal')">🟡 보통 (중급 단어)</button>
+        <button class="menu-btn btn-hard" onclick="startGame('hard')">🔴 어려움 (고급 단어)</button>
+    </div>
 
-        <!-- 게임 UI -->
-        <div class="ui-overlay">
-            <div class="stats">
+    <!-- 게임오버 화면 -->
+    <div id="gameOverScreen">
+        <div class="gameover-box">
+            <h2 class="gameover-title">🎮 미션 완료!</h2>
+            <div class="final-score" id="finalScore">0</div>
+            <div class="result-stats">
+                정답: <span class="correct" id="correctCount">0</span>개 / 
+                총점: <span class="total" id="totalScore">0</span>점
+            </div>
+            <div class="gameover-buttons">
+                <button class="gameover-btn btn-normal" onclick="goToMenu()">🏠 메뉴로</button>
+                <button class="gameover-btn btn-easy" onclick="restartGame()">🔄 다시하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 게임 컨테이너 -->
+    <div id="gameContainer">
+        <!-- 상단 UI -->
+        <div id="topUI">
+            <div class="stats-row">
                 <div class="stat-box">
                     <div class="stat-label">점수</div>
-                    <div class="stat-value" id="score">0</div>
+                    <div class="stat-value score" id="score">0</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-label">질문</div>
@@ -225,113 +404,183 @@
                 </div>
                 <div class="stat-box">
                     <div class="stat-label">남은시간</div>
-                    <div class="stat-value" id="timeLeft">60</div>
+                    <div class="stat-value time" id="timeLeft">60</div>
                 </div>
             </div>
-
-            <div class="current-word" id="currentWord">
-                <div class="word-text" id="targetWord">Loading...</div>
-                <div class="score-display" id="dynamicScore">100점</div>
+            <div class="word-display">
+                <div class="word-english" id="targetWord">준비중...</div>
+                <div class="word-hint" id="dynamicScore">100점</div>
             </div>
         </div>
 
-        <!-- 게임 오버 화면 -->
-        <div class="game-over" id="gameOverScreen">
-            <h2>🎮 미션 완료!</h2>
-            <div class="final-score" id="finalScore">0</div>
-            <div style="font-size: 20px; margin: 20px 0; opacity: 0.8;">
-                정답: <span id="correctCount" style="color: #4caf50;">0</span>개 / 
-                총점: <span id="totalScore" style="color: #ffd700;">0</span>점
-            </div>
-            <div style="margin: 30px 0;">
-                <button class="menu-btn btn-normal" onclick="menuScreen()" style="width: 250px;">🏠 메뉴로</button>
-                <button class="menu-btn btn-easy" onclick="restartGame()" style="width: 250px;">🔄 다시하기</button>
-            </div>
+        <!-- 캔버스 영역 -->
+        <div id="canvasWrapper">
+            <canvas id="gameCanvas"></canvas>
         </div>
 
-        <!-- 게임 캔버스 -->
-        <canvas id="gameCanvas"></canvas>
+        <!-- 모바일 컨트롤 -->
+        <div id="mobileControls">
+            <div class="control-row">
+                <div class="move-buttons">
+                    <button class="ctrl-btn" id="btnLeft">◀</button>
+                    <button class="ctrl-btn" id="btnRight">▶</button>
+                </div>
+                <button class="ctrl-btn fire-btn" id="btnFire">FIRE</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // 토익 단어 데이터 (이전과 동일)
+        // ========================================
+        // 토익 단어 데이터베이스
+        // ========================================
         const wordDatabase = {
             easy: [
-                { word: 'abundant', meaning: '풍부한' }, { word: 'accomplish', meaning: '성취하다' },
-                { word: 'acquire', meaning: '획득하다' }, { word: 'adequate', meaning: '적절한' },
-                { word: 'adverse', meaning: '부정적인' }, { word: 'advocate', meaning: '옹호자' },
-                { word: 'affect', meaning: '영향을 주다' }, { word: 'allocate', meaning: '배분하다' },
-                { word: 'anticipate', meaning: '예상하다' }, { word: 'apparent', meaning: '분명한' }
+                { word: 'abundant', meaning: '풍부한' },
+                { word: 'accomplish', meaning: '성취하다' },
+                { word: 'acquire', meaning: '획득하다' },
+                { word: 'adequate', meaning: '적절한' },
+                { word: 'adverse', meaning: '부정적인' },
+                { word: 'advocate', meaning: '옹호자' },
+                { word: 'affect', meaning: '영향을 주다' },
+                { word: 'allocate', meaning: '배분하다' },
+                { word: 'anticipate', meaning: '예상하다' },
+                { word: 'apparent', meaning: '분명한' },
+                { word: 'approve', meaning: '승인하다' },
+                { word: 'benefit', meaning: '이익' }
             ],
             normal: [
-                { word: 'arbitrary', meaning: '자의적인' }, { word: 'augment', meaning: '증가시키다' },
-                { word: 'autonomy', meaning: '자율성' }, { word: 'benchmark', meaning: '기준' },
-                { word: 'bilateral', meaning: '양자적인' }, { word: 'cohesive', meaning: '응집력 있는' },
-                { word: 'commodity', meaning: '상품' }, { word: 'compliance', meaning: '준수' },
-                { word: 'concurrent', meaning: '동시의' }, { word: 'contingency', meaning: '우발 상황' }
+                { word: 'arbitrary', meaning: '자의적인' },
+                { word: 'augment', meaning: '증가시키다' },
+                { word: 'autonomy', meaning: '자율성' },
+                { word: 'benchmark', meaning: '기준' },
+                { word: 'bilateral', meaning: '양자적인' },
+                { word: 'cohesive', meaning: '응집력 있는' },
+                { word: 'commodity', meaning: '상품' },
+                { word: 'compliance', meaning: '준수' },
+                { word: 'concurrent', meaning: '동시의' },
+                { word: 'contingency', meaning: '우발 상황' },
+                { word: 'deteriorate', meaning: '악화되다' },
+                { word: 'discrepancy', meaning: '불일치' }
             ],
             hard: [
-                { word: 'aggregate', meaning: '합계' }, { word: 'alleviate', meaning: '완화하다' },
-                { word: 'ameliorate', meaning: '개선하다' }, { word: 'amorphous', meaning: '형태 없는' },
-                { word: 'authenticate', meaning: '인증하다' }, { word: 'augury', meaning: '징조' },
-                { word: 'burgeoning', meaning: '번성하는' }, { word: 'circumvent', meaning: '회피하다' },
-                { word: 'cogent', meaning: '설득력 있는' }, { word: 'corroborate', meaning: '확증하다' }
+                { word: 'aggregate', meaning: '합계' },
+                { word: 'alleviate', meaning: '완화하다' },
+                { word: 'ameliorate', meaning: '개선하다' },
+                { word: 'amorphous', meaning: '형태 없는' },
+                { word: 'authenticate', meaning: '인증하다' },
+                { word: 'burgeoning', meaning: '번성하는' },
+                { word: 'circumvent', meaning: '회피하다' },
+                { word: 'cogent', meaning: '설득력 있는' },
+                { word: 'corroborate', meaning: '확증하다' },
+                { word: 'depreciate', meaning: '가치가 떨어지다' },
+                { word: 'exacerbate', meaning: '악화시키다' },
+                { word: 'substantiate', meaning: '입증하다' }
             ]
         };
 
+        // 오답용 가짜 뜻
+        const fakeMeanings = [
+            '반대하다', '축소하다', '분리하다', '제거하다', '증발하다',
+            '압축하다', '회전하다', '팽창하다', '수축하다', '변형하다',
+            '연기하다', '취소하다', '무시하다', '거부하다', '포기하다'
+        ];
+
+        // ========================================
         // 게임 상태
-        const gameState = {
+        // ========================================
+        const game = {
             canvas: null,
             ctx: null,
+            width: 0,
+            height: 0,
+            
+            // 게임 설정
             difficulty: 'normal',
             words: [],
-            currentTargetWord: null,
-            currentQuestionIndex: 0,
-            enemies: [],
-            bullets: [],
-            particles: [],
+            currentWord: null,
+            questionIndex: 0,
+            maxQuestions: 10,
+            
+            // 점수
             score: 0,
-            totalScore: 0,
-            correctAnswers: 0,
-            gameTime: 0,
             maxScore: 100,
-            ship: {
-                x: 0,
-                y: 0,
-                width: 40,
-                height: 40,
-                speed: 8
-            },
-            keys: {},
-            gameRunning: false,
-            gamePaused: false
+            correctCount: 0,
+            
+            // 시간
+            timeLeft: 60,
+            lastTime: 0,
+            
+            // 게임 오브젝트
+            ship: { x: 0, y: 0, width: 40, height: 40, speed: 8 },
+            bullets: [],
+            enemies: [],
+            particles: [],
+            stars: [],
+            
+            // 입력
+            keys: { left: false, right: false },
+            
+            // 상태
+            running: false,
+            paused: false
         };
 
+        // ========================================
         // 초기화
+        // ========================================
         function init() {
-            gameState.canvas = document.getElementById('gameCanvas');
-            gameState.ctx = gameState.canvas.getContext('2d');
+            game.canvas = document.getElementById('gameCanvas');
+            game.ctx = game.canvas.getContext('2d');
             
             resizeCanvas();
-            setupEventListeners();
+            createStars();
+            setupInputs();
+            
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 게임 루프 시작
             requestAnimationFrame(gameLoop);
         }
 
-        // 캔버스 크기 조정
         function resizeCanvas() {
-            const rect = gameState.canvas.getBoundingClientRect();
-            gameState.canvas.width = rect.width;
-            gameState.canvas.height = rect.height;
-            gameState.ship.x = gameState.canvas.width / 2 - gameState.ship.width / 2;
-            gameState.ship.y = gameState.canvas.height - 100;
+            const wrapper = document.getElementById('canvasWrapper');
+            const rect = wrapper.getBoundingClientRect();
+            
+            game.width = rect.width;
+            game.height = rect.height;
+            
+            game.canvas.width = game.width;
+            game.canvas.height = game.height;
+            
+            // 우주선 위치 초기화
+            game.ship.x = game.width / 2 - game.ship.width / 2;
+            game.ship.y = game.height - game.ship.height - 20;
+            
+            createStars();
         }
 
-        // 이벤트 리스너
-        function setupEventListeners() {
-            window.addEventListener('resize', resizeCanvas);
-            
+        function createStars() {
+            game.stars = [];
+            for (let i = 0; i < 100; i++) {
+                game.stars.push({
+                    x: Math.random() * game.width,
+                    y: Math.random() * game.height,
+                    size: Math.random() * 2 + 0.5,
+                    speed: Math.random() * 0.5 + 0.2,
+                    alpha: Math.random()
+                });
+            }
+        }
+
+        // ========================================
+        // 입력 처리
+        // ========================================
+        function setupInputs() {
+            // 키보드
             document.addEventListener('keydown', (e) => {
-                gameState.keys[e.code] = true;
+                if (e.code === 'ArrowLeft' || e.code === 'KeyA') game.keys.left = true;
+                if (e.code === 'ArrowRight' || e.code === 'KeyD') game.keys.right = true;
                 if (e.code === 'Space') {
                     e.preventDefault();
                     shoot();
@@ -339,40 +588,64 @@
             });
             
             document.addEventListener('keyup', (e) => {
-                gameState.keys[e.code] = false;
+                if (e.code === 'ArrowLeft' || e.code === 'KeyA') game.keys.left = false;
+                if (e.code === 'ArrowRight' || e.code === 'KeyD') game.keys.right = false;
             });
 
-            // 터치/마우스 지원
-            gameState.canvas.addEventListener('touchmove', handleInput);
-            gameState.canvas.addEventListener('mousemove', handleInput);
-            gameState.canvas.addEventListener('touchstart', (e) => e.preventDefault());
-            gameState.canvas.addEventListener('click', shoot);
+            // 모바일 버튼
+            const btnLeft = document.getElementById('btnLeft');
+            const btnRight = document.getElementById('btnRight');
+            const btnFire = document.getElementById('btnFire');
+
+            // 터치 이벤트
+            btnLeft.addEventListener('touchstart', (e) => { e.preventDefault(); game.keys.left = true; });
+            btnLeft.addEventListener('touchend', () => game.keys.left = false);
+            btnRight.addEventListener('touchstart', (e) => { e.preventDefault(); game.keys.right = true; });
+            btnRight.addEventListener('touchend', () => game.keys.right = false);
+            btnFire.addEventListener('touchstart', (e) => { e.preventDefault(); shoot(); });
+
+            // 마우스 이벤트 (PC에서도 버튼 클릭 가능)
+            btnLeft.addEventListener('mousedown', () => game.keys.left = true);
+            btnLeft.addEventListener('mouseup', () => game.keys.left = false);
+            btnLeft.addEventListener('mouseleave', () => game.keys.left = false);
+            btnRight.addEventListener('mousedown', () => game.keys.right = true);
+            btnRight.addEventListener('mouseup', () => game.keys.right = false);
+            btnRight.addEventListener('mouseleave', () => game.keys.right = false);
+            btnFire.addEventListener('click', shoot);
+
+            // 캔버스 터치/마우스로 우주선 이동
+            game.canvas.addEventListener('mousemove', handlePointerMove);
+            game.canvas.addEventListener('touchmove', handlePointerMove);
+            game.canvas.addEventListener('click', shoot);
         }
 
-        // 입력 처리
-        function handleInput(e) {
+        function handlePointerMove(e) {
+            if (!game.running) return;
             e.preventDefault();
-            const rect = gameState.canvas.getBoundingClientRect();
+            
+            const rect = game.canvas.getBoundingClientRect();
             const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
             
-            gameState.ship.x = x - gameState.ship.width / 2;
-            gameState.ship.x = Math.max(0, Math.min(gameState.canvas.width - gameState.ship.width, gameState.ship.x));
+            game.ship.x = x - game.ship.width / 2;
+            game.ship.x = Math.max(0, Math.min(game.width - game.ship.width, game.ship.x));
         }
 
-        // 게임 시작
+        // ========================================
+        // 게임 시작/종료
+        // ========================================
         function startGame(difficulty) {
-            gameState.difficulty = difficulty;
-            gameState.words = shuffleArray([...wordDatabase[difficulty]]);
-            gameState.currentQuestionIndex = 0;
-            gameState.score = 0;
-            gameState.totalScore = 0;
-            gameState.correctAnswers = 0;
-            gameState.gameTime = 60;
-            gameState.enemies = [];
-            gameState.bullets = [];
-            gameState.particles = [];
-            gameState.maxScore = 100;
-            gameState.gameRunning = true;
+            game.difficulty = difficulty;
+            game.words = shuffleArray([...wordDatabase[difficulty]]);
+            game.questionIndex = 0;
+            game.score = 0;
+            game.correctCount = 0;
+            game.timeLeft = 60;
+            game.maxScore = 100;
+            game.bullets = [];
+            game.enemies = [];
+            game.particles = [];
+            game.running = true;
+            game.lastTime = performance.now();
             
             document.getElementById('menuScreen').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.remove('show');
@@ -381,362 +654,391 @@
             updateUI();
         }
 
-        // 다음 문제
+        function endGame() {
+            game.running = false;
+            
+            document.getElementById('finalScore').textContent = game.score;
+            document.getElementById('correctCount').textContent = game.correctCount;
+            document.getElementById('totalScore').textContent = game.score;
+            document.getElementById('gameOverScreen').classList.add('show');
+        }
+
+        function goToMenu() {
+            game.running = false;
+            document.getElementById('gameOverScreen').classList.remove('show');
+            document.getElementById('menuScreen').classList.remove('hidden');
+        }
+
+        function restartGame() {
+            startGame(game.difficulty);
+        }
+
+        // ========================================
+        // 문제 생성
+        // ========================================
         function nextQuestion() {
-            if (gameState.currentQuestionIndex >= 10) {
+            if (game.questionIndex >= game.maxQuestions) {
                 endGame();
                 return;
             }
             
-            gameState.currentTargetWord = gameState.words[gameState.currentQuestionIndex];
-            gameState.enemies = [];
-            gameState.maxScore = 100;
+            game.currentWord = game.words[game.questionIndex];
+            game.maxScore = 100;
+            game.enemies = [];
             
-            // 적 생성
             spawnEnemies();
-            
+            game.questionIndex++;
             updateUI();
-            gameState.currentQuestionIndex++;
         }
 
-        // 적 생성
         function spawnEnemies() {
-            const wrongOptions = [
-                gameState.currentTargetWord.meaning + '?!',
-                '틀린 답',
-                '아닌 뜻',
-                '다른 뜻'
-            ];
+            const correctMeaning = game.currentWord.meaning;
             
-            // 정답 적
-            gameState.enemies.push(createEnemy(gameState.currentTargetWord.meaning, true));
+            // 오답 뜻 3개 선택
+            const wrongMeanings = shuffleArray([...fakeMeanings]).slice(0, 3);
             
-            // 오답 적들 (3개)
-            shuffleArray(wrongOptions).slice(0, 3).forEach(option => {
-                gameState.enemies.push(createEnemy(option, false));
+            // 모든 보기 섞기
+            const allOptions = shuffleArray([
+                { text: correctMeaning, isCorrect: true },
+                ...wrongMeanings.map(m => ({ text: m, isCorrect: false }))
+            ]);
+            
+            // 적 배치 (4개 주요 적)
+            const spacing = game.width / 5;
+            allOptions.forEach((option, i) => {
+                game.enemies.push(createEnemy(
+                    spacing * (i + 1) - 40,
+                    -80 - i * 30,
+                    option.text,
+                    option.isCorrect,
+                    'main'
+                ));
             });
             
-            // 추가 잡몹들
-            for (let i = 0; i < 5; i++) {
-                gameState.enemies.push(createEnemy('잡몹', false));
+            // 방해 잡몹 추가
+            for (let i = 0; i < 3; i++) {
+                game.enemies.push(createEnemy(
+                    Math.random() * (game.width - 60),
+                    -150 - Math.random() * 100,
+                    '💀',
+                    false,
+                    'mob'
+                ));
             }
         }
 
-        // 적 생성
-        function createEnemy(text, isCorrect) {
+        function createEnemy(x, y, text, isCorrect, type) {
+            const isMob = type === 'mob';
             return {
-                x: Math.random() * (gameState.canvas.width - 80),
-                y: -60,
-                width: 80,
-                height: 60,
-                speed: 1.5 + Math.random() * 2,
+                x: x,
+                y: y,
+                width: isMob ? 40 : 80,
+                height: isMob ? 40 : 50,
+                speed: isMob ? 2 + Math.random() * 2 : 1 + Math.random() * 0.5,
                 text: text,
                 isCorrect: isCorrect,
-                color: isCorrect ? '#4caf50' : '#f44336',
-                glow: isCorrect ? '#00ff88' : '#ff4444',
+                type: type,
+                color: isCorrect ? '#4caf50' : (isMob ? '#666' : '#e53935'),
+                glowColor: isCorrect ? '#00ff88' : (isMob ? '#888' : '#ff4444'),
                 destroyed: false,
-                size: 1 + Math.random() * 0.5
+                wobbleOffset: Math.random() * Math.PI * 2
             };
         }
 
+        // ========================================
         // 발사
+        // ========================================
         function shoot() {
-            if (!gameState.gameRunning) return;
+            if (!game.running || game.bullets.length >= 5) return;
             
-            gameState.bullets.push({
-                x: gameState.ship.x + gameState.ship.width / 2,
-                y: gameState.ship.y,
-                width: 4,
-                height: 12,
-                speed: 10,
-                color: '#00ffff'
+            game.bullets.push({
+                x: game.ship.x + game.ship.width / 2 - 3,
+                y: game.ship.y,
+                width: 6,
+                height: 15,
+                speed: 12
             });
             
-            // 사운드 효과 (웹 오디오 API)
-            playShootSound();
+            playSound(800, 0.1, 'square');
         }
 
+        // ========================================
         // 게임 루프
-        function gameLoop() {
-            update();
+        // ========================================
+        function gameLoop(timestamp) {
+            const deltaTime = (timestamp - game.lastTime) / 1000;
+            game.lastTime = timestamp;
+            
+            update(deltaTime);
             render();
+            
             requestAnimationFrame(gameLoop);
         }
 
-        // 업데이트
-        function update() {
-            if (!gameState.gameRunning || gameState.gamePaused) return;
+        function update(dt) {
+            if (!game.running || game.paused) return;
             
-            // 배 위치 업데이트
-            if (gameState.keys['ArrowLeft']) {
-                gameState.ship.x -= gameState.ship.speed;
-            }
-            if (gameState.keys['ArrowRight']) {
-                gameState.ship.x += gameState.ship.speed;
+            // 시간 감소
+            game.timeLeft -= dt;
+            if (game.timeLeft <= 0) {
+                endGame();
+                return;
             }
             
-            gameState.ship.x = Math.max(0, Math.min(gameState.canvas.width - gameState.ship.width, gameState.ship.x));
+            // 우주선 이동
+            if (game.keys.left) game.ship.x -= game.ship.speed;
+            if (game.keys.right) game.ship.x += game.ship.speed;
+            game.ship.x = Math.max(0, Math.min(game.width - game.ship.width, game.ship.x));
             
             // 총알 업데이트
-            gameState.bullets = gameState.bullets.filter(bullet => {
-                bullet.y -= bullet.speed;
-                return bullet.y > -bullet.height;
+            game.bullets = game.bullets.filter(b => {
+                b.y -= b.speed;
+                return b.y > -b.height;
             });
             
             // 적 업데이트
-            let correctEnemyHit = false;
-            
-            gameState.enemies.forEach(enemy => {
+            let correctHit = false;
+            game.enemies.forEach(enemy => {
                 if (enemy.destroyed) return;
                 
                 enemy.y += enemy.speed;
-                enemy.x += (Math.sin(enemy.y * 0.01) * 2);
+                enemy.x += Math.sin(enemy.y * 0.02 + enemy.wobbleOffset) * 1.5;
                 
-                // 화면 밖으로 나가면 점수 감소
-                if (enemy.y > gameState.canvas.height) {
-                    gameState.maxScore = Math.max(10, gameState.maxScore - 5);
+                // 화면 벗어남
+                if (enemy.y > game.height) {
+                    enemy.destroyed = true;
+                    if (enemy.type === 'main') {
+                        game.maxScore = Math.max(10, game.maxScore - 10);
+                    }
                 }
                 
-                // 충돌 체크
-                gameState.bullets.forEach((bullet, bulletIndex) => {
+                // 총알 충돌
+                game.bullets.forEach((bullet, bi) => {
                     if (checkCollision(bullet, enemy)) {
-                        gameState.bullets.splice(bulletIndex, 1);
+                        game.bullets.splice(bi, 1);
                         enemy.destroyed = true;
-                        
-                        createExplosion(enemy.x + enemy.width/2, enemy.y + enemy.height/2);
+                        createExplosion(enemy.x + enemy.width/2, enemy.y + enemy.height/2, enemy.color);
                         
                         if (enemy.isCorrect) {
-                            correctEnemyHit = true;
-                            gameState.score += gameState.maxScore;
-                            gameState.totalScore += gameState.maxScore;
-                            gameState.correctAnswers++;
-                            playHitSound(true);
+                            correctHit = true;
+                            game.score += game.maxScore;
+                            game.correctCount++;
+                            playSound(523, 0.3, 'sine');
                             
-                            setTimeout(() => {
-                                nextQuestion();
-                            }, 1000);
-                        } else {
-                            gameState.maxScore = Math.max(10, gameState.maxScore - 10);
-                            playHitSound(false);
+                            setTimeout(() => nextQuestion(), 800);
+                        } else if (enemy.type === 'main') {
+                            game.maxScore = Math.max(10, game.maxScore - 15);
+                            playSound(200, 0.2, 'sawtooth');
                         }
                     }
                 });
             });
             
             // 파티클 업데이트
-            gameState.particles = gameState.particles.filter(particle => {
-                particle.x += particle.vx;
-                particle.y += particle.vy;
-                particle.life--;
-                particle.vy += 0.1; // 중력
-                return particle.life > 0;
+            game.particles = game.particles.filter(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.15;
+                p.life--;
+                return p.life > 0;
             });
             
-            gameState.gameTime -= 1/60;
-            if (gameState.gameTime <= 0) {
-                endGame();
-            }
+            // 별 업데이트
+            game.stars.forEach(star => {
+                star.y += star.speed;
+                if (star.y > game.height) {
+                    star.y = 0;
+                    star.x = Math.random() * game.width;
+                }
+                star.alpha = 0.3 + Math.sin(performance.now() * 0.003 + star.x) * 0.5;
+            });
             
             updateUI();
         }
 
-        // 충돌 체크
-        function checkCollision(rect1, rect2) {
-            return rect1.x < rect2.x + rect2.width &&
-                   rect1.x + rect1.width > rect2.x &&
-                   rect1.y < rect2.y + rect2.height &&
-                   rect1.y + rect1.height > rect2.y;
+        function checkCollision(a, b) {
+            return a.x < b.x + b.width &&
+                   a.x + a.width > b.x &&
+                   a.y < b.y + b.height &&
+                   a.y + a.height > b.y;
         }
 
-        // 폭발 이펙트
-        function createExplosion(x, y) {
+        function createExplosion(x, y, color) {
             for (let i = 0; i < 15; i++) {
-                gameState.particles.push({
+                game.particles.push({
                     x: x,
                     y: y,
-                    vx: (Math.random() - 0.5) * 10,
-                    vy: (Math.random() - 0.5) * 10,
-                    life: 30,
-                    color: '#00ffff'
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    life: 30 + Math.random() * 20,
+                    color: color,
+                    size: 3 + Math.random() * 4
                 });
             }
         }
 
+        // ========================================
         // 렌더링
+        // ========================================
         function render() {
-            // 캔버스 지우기
-            gameState.ctx.fillStyle = 'rgba(12, 12, 12, 0.1)';
-            gameState.ctx.fillRect(0, 0, gameState.canvas.width, gameState.canvas.height);
+            const ctx = game.ctx;
             
-            // 배 그리기
-            drawShip();
+            // 배경
+            ctx.fillStyle = '#0a0a15';
+            ctx.fillRect(0, 0, game.width, game.height);
             
-            // 총알 그리기
-            gameState.bullets.forEach(bullet => {
-                gameState.ctx.save();
-                gameState.ctx.shadowColor = bullet.color;
-                gameState.ctx.shadowBlur = 15;
-                gameState.ctx.fillStyle = bullet.color;
-                gameState.ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
-                gameState.ctx.restore();
+            // 별
+            game.stars.forEach(star => {
+                ctx.globalAlpha = star.alpha;
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
             });
+            ctx.globalAlpha = 1;
             
-            // 적 그리기
-            gameState.enemies.forEach(enemy => {
+            if (!game.running) return;
+            
+            // 파티클
+            game.particles.forEach(p => {
+                ctx.globalAlpha = p.life / 50;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+            });
+            ctx.globalAlpha = 1;
+            
+            // 적
+            game.enemies.forEach(enemy => {
                 if (enemy.destroyed) return;
                 
-                gameState.ctx.save();
-                gameState.ctx.translate(enemy.x + enemy.width/2, enemy.y + enemy.height/2);
-                gameState.ctx.scale(enemy.size, enemy.size);
+                ctx.save();
                 
-                // 글로우 효과
-                gameState.ctx.shadowColor = enemy.glow;
-                gameState.ctx.shadowBlur = 20;
+                // 글로우
+                ctx.shadowColor = enemy.glowColor;
+                ctx.shadowBlur = 15;
                 
                 // 배경
-                gameState.ctx.fillStyle = enemy.color;
-                gameState.ctx.fillRect(-enemy.width/2, -enemy.height/2, enemy.width, enemy.height);
+                ctx.fillStyle = enemy.color;
+                ctx.beginPath();
+                ctx.roundRect(enemy.x, enemy.y, enemy.width, enemy.height, 8);
+                ctx.fill();
                 
                 // 테두리
-                gameState.ctx.strokeStyle = '#fff';
-                gameState.ctx.lineWidth = 3;
-                gameState.ctx.strokeRect(-enemy.width/2, -enemy.height/2, enemy.width, enemy.height);
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
                 
                 // 텍스트
-                gameState.ctx.shadowBlur = 10;
-                gameState.ctx.fillStyle = '#fff';
-                gameState.ctx.font = 'bold 16px Arial';
-                gameState.ctx.textAlign = 'center';
-                gameState.ctx.textBaseline = 'middle';
-                gameState.ctx.fillText(enemy.text, 0, 0);
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#fff';
+                ctx.font = enemy.type === 'mob' ? '20px Arial' : 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(enemy.text, enemy.x + enemy.width/2, enemy.y + enemy.height/2);
                 
-                gameState.ctx.restore();
+                ctx.restore();
             });
             
-            // 파티클 그리기
-            gameState.particles.forEach(particle => {
-                gameState.ctx.save();
-                gameState.ctx.globalAlpha = particle.life / 30;
-                gameState.ctx.shadowColor = particle.color;
-                gameState.ctx.shadowBlur = 10;
-                gameState.ctx.fillStyle = particle.color;
-                gameState.ctx.fillRect(particle.x, particle.y, 4, 4);
-                gameState.ctx.restore();
+            // 총알
+            game.bullets.forEach(bullet => {
+                ctx.save();
+                ctx.shadowColor = '#00ffff';
+                ctx.shadowBlur = 10;
+                ctx.fillStyle = '#00ffff';
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                ctx.restore();
             });
             
-            // 스캔라인 효과
-            gameState.ctx.fillStyle = 'rgba(0, 255, 255, 0.03)';
-            gameState.ctx.fillRect(0, 0, gameState.canvas.width, gameState.canvas.height);
+            // 우주선
+            drawShip();
         }
 
-        // 우주선 그리기
         function drawShip() {
-            gameState.ctx.save();
-            gameState.ctx.translate(gameState.ship.x + gameState.ship.width/2, gameState.ship.y + gameState.ship.height/2);
+            const ctx = game.ctx;
+            const s = game.ship;
+            const cx = s.x + s.width / 2;
+            const cy = s.y + s.height / 2;
+            
+            ctx.save();
+            ctx.translate(cx, cy);
             
             // 엔진 불꽃
-            gameState.ctx.shadowColor = '#ff6600';
-            gameState.ctx.shadowBlur = 20;
-            gameState.ctx.fillStyle = '#ff8800';
-            gameState.ctx.beginPath();
-            gameState.ctx.moveTo(0, 20);
-            gameState.ctx.lineTo(-8, 35);
-            gameState.ctx.lineTo(8, 35);
-            gameState.ctx.fill();
+            ctx.shadowColor = '#ff6600';
+            ctx.shadowBlur = 15;
+            ctx.fillStyle = '#ff8800';
+            ctx.beginPath();
+            ctx.moveTo(-8, 15);
+            ctx.lineTo(0, 30 + Math.sin(performance.now() * 0.02) * 5);
+            ctx.lineTo(8, 15);
+            ctx.closePath();
+            ctx.fill();
             
-            // 우주선 본체
-            gameState.ctx.shadowColor = '#667eea';
-            gameState.ctx.shadowBlur = 25;
-            gameState.ctx.fillStyle = '#667eea';
-            gameState.ctx.beginPath();
-            gameState.ctx.moveTo(0, -25);
-            gameState.ctx.lineTo(-20, 15);
-            gameState.ctx.lineTo(-10, 20);
-            gameState.ctx.lineTo(10, 20);
-            gameState.ctx.lineTo(20, 15);
-            gameState.ctx.closePath();
-            gameState.ctx.fill();
+            // 본체
+            ctx.shadowColor = '#667eea';
+            ctx.shadowBlur = 20;
+            ctx.fillStyle = '#667eea';
+            ctx.beginPath();
+            ctx.moveTo(0, -20);
+            ctx.lineTo(-18, 15);
+            ctx.lineTo(-8, 18);
+            ctx.lineTo(8, 18);
+            ctx.lineTo(18, 15);
+            ctx.closePath();
+            ctx.fill();
             
-            // 코일링
-            gameState.ctx.shadowBlur = 15;
-            gameState.ctx.fillStyle = '#fff';
-            gameState.ctx.beginPath();
-            gameState.ctx.arc(0, -15, 4, 0, Math.PI * 2);
-            gameState.ctx.fill();
+            // 조종석
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(0, -8, 4, 0, Math.PI * 2);
+            ctx.fill();
             
-            gameState.ctx.restore();
+            ctx.restore();
         }
 
-        // 사운드 효과 (간단한 Web Audio)
-        function playShootSound() {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            
-            oscillator.frequency.value = 800;
-            oscillator.type = 'square';
-            
-            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            
-            oscillator.start(audioCtx.currentTime);
-            oscillator.stop(audioCtx.currentTime + 0.1);
-        }
-
-        function playHitSound(isCorrect) {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            
-            oscillator.frequency.value = isCorrect ? 523 : 392;
-            oscillator.type = 'sine';
-            
-            gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-            
-            oscillator.start(audioCtx.currentTime);
-            oscillator.stop(audioCtx.currentTime + 0.2);
-        }
-
+        // ========================================
         // UI 업데이트
+        // ========================================
         function updateUI() {
-            document.getElementById('score').textContent = gameState.totalScore;
-            document.getElementById('questionNum').textContent = `${gameState.currentQuestionIndex + 1}/10`;
-            document.getElementById('timeLeft').textContent = Math.ceil(gameState.gameTime);
-            document.getElementById('targetWord').textContent = gameState.currentTargetWord?.word || 'Loading...';
-            document.getElementById('dynamicScore').textContent = `${gameState.maxScore}점`;
+            document.getElementById('score').textContent = game.score;
+            document.getElementById('questionNum').textContent = `${Math.min(game.questionIndex, game.maxQuestions)}/${game.maxQuestions}`;
+            document.getElementById('timeLeft').textContent = Math.max(0, Math.ceil(game.timeLeft));
+            document.getElementById('targetWord').textContent = game.currentWord?.word || '준비중...';
+            document.getElementById('dynamicScore').textContent = `${game.maxScore}점`;
         }
 
-        // 게임 종료
-        function endGame() {
-            gameState.gameRunning = false;
-            document.getElementById('finalScore').textContent = gameState.totalScore;
-            document.getElementById('correctCount').textContent = gameState.correctAnswers;
-            document.getElementById('totalScore').textContent = gameState.totalScore;
-            document.getElementById('gameOverScreen').classList.add('show');
+        // ========================================
+        // 사운드
+        // ========================================
+        function playSound(freq, duration, type) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.frequency.value = freq;
+                osc.type = type;
+                
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
         }
 
-        // 메뉴로 돌아가기
-        function menuScreen() {
-            gameState.gameRunning = false;
-            document.getElementById('menuScreen').classList.remove('hidden');
-            document.getElementById('gameOverScreen').classList.remove('show');
-        }
-
-        // 다시하기
-        function restartGame() {
-            startGame(gameState.difficulty);
-        }
-
-        // 배열 섞기
-        function shuffleArray(array) {
-            return array.sort(() => Math.random() - 0.5);
+        // ========================================
+        // 유틸리티
+        // ========================================
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
         }
 
         // 초기화
